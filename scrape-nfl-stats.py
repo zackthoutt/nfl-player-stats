@@ -105,6 +105,25 @@ class Scraper():
 class Player():
     """An NFL player"""
 
+    profile = {
+        'name': None,
+        'position': None,
+        'height': None,
+        'weight': None,
+        'current_team': None,
+        'birth_date': None,
+        'birth_place': None,
+        'death_date': None,
+        'college': None,
+        'high_school': None,
+        'draft_team': None,
+        'draft_round': None,
+        'draft_position': None,
+        'draft_year': None,
+        'current_salary': None,
+        'hof_induction_year': None
+    }
+
     def __init__(self, profile_url, scraper):
         """
             Args:
@@ -116,7 +135,6 @@ class Player():
         """
         self.profile_url = profile_url
         self.scraper = scraper
-        self.profile = {}
 
     def scrape_profile(self):
         """Scrape profile info for player"""
@@ -138,9 +156,7 @@ class Player():
         current_attribute += 1
 
         affiliation_section = profile_section.find('span', {'itemprop': 'affiliation'})
-        if affiliation_section is None:
-            self.profile['current_team'] = None
-        else:
+        if affiliation_section is not None:
             self.profile['current_team'] = affiliation_section.contents[0].contents[0]
             current_attribute += 1
 
@@ -150,17 +166,13 @@ class Player():
         current_attribute += 1
 
         death_section = profile_section.find('span', {'itemprop': 'deathDate'})
-        if death_section is None:
-            self.profile['death_date'] = None
-        else:
+        if death_section is not None:
             self.profile['death_date'] = death_section['data-death']
             current_attribute += 1
 
         if profile_attributes[current_attribute].contents[0].contents[0] == 'College':
             self.profile['college'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
-        else:
-            self.profile['college'] = None
 
         # Skip weighted career AV
         current_attribute += 1
@@ -168,8 +180,6 @@ class Player():
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'High School':
             self.profile['high_school'] = profile_attributes[current_attribute].contents[2].contents[0] + ', ' + profile_attributes[current_attribute].contents[4].contents[0]
             current_attribute += 1
-        else:
-            self.profile['high_school'] = None
 
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Draft':
             self.profile['draft_team'] = profile_attributes[current_attribute].contents[2].contents[0]
@@ -178,25 +188,15 @@ class Player():
             self.profile['draft_position'] = re.findall(r'\d+', draft_info[5])[0]
             self.profile['draft_year'] = re.findall(r'\d+', profile_attributes[current_attribute].contents[4].contents[0])[0]
             current_attribute += 1
-        else:
-            self.profile['draft_team'] = None
-            self.profile['draft_round'] = None
-            self.profile['draft_position'] = None
-            self.profile['draft_year'] = None
 
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Current cap hit':
             profile_attributes[current_attribute].contents
             self.profile['current_salary'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
-        else:
-            self.profile['current_salary'] = None
 
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Hall of fame':
             self.profile['hof_induction_year'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
-        else:
-            self.profile['hof_induction_year'] = None
-        print self.profile
 
         self.seasons_with_stats = self.get_seasons_with_stats(soup)
 
