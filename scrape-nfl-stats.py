@@ -214,6 +214,69 @@ class Player():
         soup = BeautifulSoup(response.content, 'html.parser')
         stats_table = soup.find('table', {'id': 'stats'})
 
+    @staticmethod
+    def make_player_game_stats():
+        """Factory method to return possible stats to collect for a player in a game
+
+            Returns:
+                - game_stats (dict): dictionary with game stats initialized
+        """
+        return {
+            # General stats
+            'date': None,
+            'game_number': None,
+            'age': None,
+            'team': None,
+            'game_at_home': None,
+            'opponent': None,
+            'game_won': None,
+            'player_team_score': 0,
+            'opponent_score': 0,
+            # Passing stats
+            'passing_attempts': 0,
+            'passing_completions': 0,
+            'passing_yards': 0,
+            'passing_touchdowns': 0,
+            'passing_interceptions': 0,
+            'passing_sacks': 0,
+            'passing_sacks_yards_lost': 0,
+            # Rushing stats
+            'rushing_attempts': 0,
+            'rushing_yards': 0,
+            'rushing_touchdowns': 0,
+            # Receiving stats
+            'receiving_targets': 0,
+            'receiving_receptions': 0,
+            'receiving_yards': 0,
+            'receiving_touchdowns': 0,
+            # Kick return stats
+            'kick_return_attempts': 0,
+            'kick_return_yards': 0,
+            'kick_return_touchdowns': 0
+            # Defense
+            'defense_sacks': 0,
+            'defense_tackles': 0,
+            'defense_tackle_assists': 0,
+            'defense_interceptions': 0,
+            'defense_interception_yards': 0,
+            'defense_interception_touchdowns': 0,
+            # Fumbles
+            'forced_fumbles': 0,
+            'fumbles': 0,
+            'fumble_recoveries': 0,
+            'fumble_recovery_yards': 0,
+            'fumble_recovery_touchdowns': 0,
+            # Kicking
+            'point_after_attemps': 0,
+            'point_after_makes': 0,
+            'field_goal_attempts': 0,
+            'field_goal_makes': 0,
+            # Punting
+            'punting_attempts': 0,
+            'punting_yards': 0,
+            'punting_blocked': 0
+        }
+
     def get_seasons_with_stats(self, profile_soup):
         """Scrape a list of seasons that has stats for the player
 
