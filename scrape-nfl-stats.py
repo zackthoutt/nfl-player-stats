@@ -105,25 +105,6 @@ class Scraper():
 class Player():
     """An NFL player"""
 
-    profile = {
-        'name': None,
-        'position': None,
-        'height': None,
-        'weight': None,
-        'current_team': None,
-        'birth_date': None,
-        'birth_place': None,
-        'death_date': None,
-        'college': None,
-        'high_school': None,
-        'draft_team': None,
-        'draft_round': None,
-        'draft_position': None,
-        'draft_year': None,
-        'current_salary': None,
-        'hof_induction_year': None
-    }
-
     def __init__(self, profile_url, scraper):
         """
             Args:
@@ -135,6 +116,25 @@ class Player():
         """
         self.profile_url = profile_url
         self.scraper = scraper
+        self.profile = {
+            'name': None,
+            'position': None,
+            'height': None,
+            'weight': None,
+            'current_team': None,
+            'birth_date': None,
+            'birth_place': None,
+            'death_date': None,
+            'college': None,
+            'high_school': None,
+            'draft_team': None,
+            'draft_round': None,
+            'draft_position': None,
+            'draft_year': None,
+            'current_salary': None,
+            'hof_induction_year': None
+        }
+        self.seasons_with_stats = []
 
     def scrape_profile(self):
         """Scrape profile info for player"""
@@ -197,6 +197,8 @@ class Player():
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Hall of fame':
             self.profile['hof_induction_year'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
+
+        print self.profile
 
         self.seasons_with_stats = self.get_seasons_with_stats(soup)
 
