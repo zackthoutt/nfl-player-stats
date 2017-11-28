@@ -127,6 +127,7 @@ class Player():
 
         profile_attributes = profile_section.find_all('p')
         current_attribute = 1
+        num_attributes = len(profile_attributes)
 
         self.position = profile_attributes[current_attribute].contents[2].split('\n')[0].split(' ')[1]
         current_attribute += 1
@@ -145,6 +146,7 @@ class Player():
         self.birth_date = profile_attributes[current_attribute].find('span', {'itemprop': 'birthDate'})['data-birth']
         birth_place_section = profile_attributes[current_attribute].find('span', {'itemprop': 'birthPlace'}).contents
         self.birth_place = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
+        current_attribute += 1
 
         death_section = profile_section.find('span', {'itemprop': 'deathDate'})
         if death_section is None:
@@ -152,6 +154,48 @@ class Player():
         else:
             self.death_date = death_section['data-death']
             current_attribute += 1
+
+        if profile_attributes[current_attribute].contents[0].contents[0] == 'College':
+            self.college = profile_attributes[current_attribute].contents[2].contents[0]
+            current_attribute += 1
+        else:
+            self.college = None
+
+        # Skip weighted career AV
+        current_attribute += 1
+
+        if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'High School':
+            self.high_school = profile_attributes[current_attribute].contents[2].contents[0] + ', ' + profile_attributes[current_attribute].contents[4].contents[0]
+            current_attribute += 1
+        else:
+            self.high_school = None
+
+        if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Draft':
+            self.draft_team = profile_attributes[current_attribute].contents[2].contents[0]
+            draft_info = profile_attributes[current_attribute].contents[3].split(' ')
+            self.draft_round = re.findall(r'\d+', draft_info[3])[0]
+            self.draft_position = re.findall(r'\d+', draft_info[5])[0]
+            self.draft_year = re.findall(r'\d+', profile_attributes[current_attribute].contents[4].contents[0])[0]
+            current_attribute += 1
+        else:
+            self.draft_team = None
+            self.draft_round = None
+            self.draft_position = None
+            self.draft_year = None
+
+        if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Current cap hit':
+            profile_attributes[current_attribute].contents
+            self.current_salary = profile_attributes[current_attribute].contents[2].contents[0]
+            current_attribute += 1
+        else:
+            self.current_salary = None
+
+        if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Hall of fame':
+            self.hof_induction_year = profile_attributes[current_attribute].contents[2].contents[0]
+            current_attribute += 1
+        else:
+            self.hof_induction_year = None
+        print self.current_salary, self.hof_induction_year
 
 
 
