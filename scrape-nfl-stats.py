@@ -116,6 +116,7 @@ class Player():
         """
         self.profile_url = profile_url
         self.scraper = scraper
+        self.profile = {}
 
     def scrape_profile(self):
         """Scrape profile info for player"""
@@ -123,84 +124,84 @@ class Player():
         soup = BeautifulSoup(response.content, 'html.parser')
 
         profile_section = soup.find('div', {'id': 'meta'})
-        self.name = profile_section.find('h1', {'itemprop': 'name'}).contents[0]
+        self.profile['name'] = profile_section.find('h1', {'itemprop': 'name'}).contents[0]
 
         profile_attributes = profile_section.find_all('p')
         current_attribute = 1
         num_attributes = len(profile_attributes)
 
-        self.position = profile_attributes[current_attribute].contents[2].split('\n')[0].split(' ')[1]
+        self.profile['position'] = profile_attributes[current_attribute].contents[2].split('\n')[0].split(' ')[1]
         current_attribute += 1
 
-        self.height = profile_attributes[current_attribute].find('span', {'itemprop': 'height'}).contents[0]
-        self.weight = profile_attributes[current_attribute].find('span', {'itemprop': 'weight'}).contents[0].split('lb')[0]
+        self.profile['height'] = profile_attributes[current_attribute].find('span', {'itemprop': 'height'}).contents[0]
+        self.profile['weight'] = profile_attributes[current_attribute].find('span', {'itemprop': 'weight'}).contents[0].split('lb')[0]
         current_attribute += 1
 
         affiliation_section = profile_section.find('span', {'itemprop': 'affiliation'})
         if affiliation_section is None:
-            self.current_team = None
+            self.profile['current_team'] = None
         else:
-            self.current_team = affiliation_section.contents[0].contents[0]
+            self.profile['current_team'] = affiliation_section.contents[0].contents[0]
             current_attribute += 1
 
-        self.birth_date = profile_attributes[current_attribute].find('span', {'itemprop': 'birthDate'})['data-birth']
+        self.profile['birth_date'] = profile_attributes[current_attribute].find('span', {'itemprop': 'birthDate'})['data-birth']
         birth_place_section = profile_attributes[current_attribute].find('span', {'itemprop': 'birthPlace'}).contents
-        self.birth_place = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
+        self.profile['birth_place'] = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
         current_attribute += 1
 
         death_section = profile_section.find('span', {'itemprop': 'deathDate'})
         if death_section is None:
-            self.death_date = None
+            self.profile['death_date'] = None
         else:
-            self.death_date = death_section['data-death']
+            self.profile['death_date'] = death_section['data-death']
             current_attribute += 1
 
         if profile_attributes[current_attribute].contents[0].contents[0] == 'College':
-            self.college = profile_attributes[current_attribute].contents[2].contents[0]
+            self.profile['college'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
         else:
-            self.college = None
+            self.profile['college'] = None
 
         # Skip weighted career AV
         current_attribute += 1
 
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'High School':
-            self.high_school = profile_attributes[current_attribute].contents[2].contents[0] + ', ' + profile_attributes[current_attribute].contents[4].contents[0]
+            self.profile['high_school'] = profile_attributes[current_attribute].contents[2].contents[0] + ', ' + profile_attributes[current_attribute].contents[4].contents[0]
             current_attribute += 1
         else:
-            self.high_school = None
+            self.profile['high_school'] = None
 
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Draft':
-            self.draft_team = profile_attributes[current_attribute].contents[2].contents[0]
+            self.profile['draft_team'] = profile_attributes[current_attribute].contents[2].contents[0]
             draft_info = profile_attributes[current_attribute].contents[3].split(' ')
-            self.draft_round = re.findall(r'\d+', draft_info[3])[0]
-            self.draft_position = re.findall(r'\d+', draft_info[5])[0]
-            self.draft_year = re.findall(r'\d+', profile_attributes[current_attribute].contents[4].contents[0])[0]
+            self.profile['draft_round'] = re.findall(r'\d+', draft_info[3])[0]
+            self.profile['draft_position'] = re.findall(r'\d+', draft_info[5])[0]
+            self.profile['draft_year'] = re.findall(r'\d+', profile_attributes[current_attribute].contents[4].contents[0])[0]
             current_attribute += 1
         else:
-            self.draft_team = None
-            self.draft_round = None
-            self.draft_position = None
-            self.draft_year = None
+            self.profile['draft_team'] = None
+            self.profile['draft_round'] = None
+            self.profile['draft_position'] = None
+            self.profile['draft_year'] = None
 
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Current cap hit':
             profile_attributes[current_attribute].contents
-            self.current_salary = profile_attributes[current_attribute].contents[2].contents[0]
+            self.profile['current_salary'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
         else:
-            self.current_salary = None
+            self.profile['current_salary'] = None
 
         if ((current_attribute + 1) <= num_attributes) and profile_attributes[current_attribute].contents[0].contents[0] == 'Hall of fame':
-            self.hof_induction_year = profile_attributes[current_attribute].contents[2].contents[0]
+            self.profile['hof_induction_year'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
         else:
-            self.hof_induction_year = None
+            self.profile['hof_induction_year'] = None
+        print self.profile
 
-        self.seasons = self.get_seasons_played(soup)
-        print self.seasons
+        self.seasons_with_stats = self.get_seasons_with_stats(soup)
 
-    def get_seasons_played(self, profile_soup):
-        """Scrape the seasons the player was in the NFL and links to the game logs
+    def get_seasons_with_stats(self, profile_soup):
+        """Scrape a list of seasons that has stats for the player
 
             Args:
                 - profile_soup (obj): The BeautifulSoup object for the player profile page
