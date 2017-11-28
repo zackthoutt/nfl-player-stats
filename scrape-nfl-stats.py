@@ -195,7 +195,28 @@ class Player():
             current_attribute += 1
         else:
             self.hof_induction_year = None
-        print self.current_salary, self.hof_induction_year
+
+        self.seasons = self.get_seasons_played(soup)
+        print self.seasons
+
+    def get_seasons_played(self, profile_soup):
+        """Scrape the seasons the player was in the NFL and links to the game logs
+
+            Args:
+                - profile_soup (obj): The BeautifulSoup object for the player profile page
+
+            Returns:
+                - seasons (dict[]): List of dictionaries with meta information about season stats
+        """
+        seasons = []
+        gamelog_list = profile_soup.find('div', {'id': 'inner_nav'}).find_all('li')[1].find_all('li')
+        if len(gamelog_list) > 0 and gamelog_list[0].contents[0].contents[0] == 'Career':
+            for season in gamelog_list:
+                seasons.append({
+                    'year': season.contents[0].contents[0],
+                    'gamelog_link': BASE_URL.format(season.contents[0]['href'])
+                })
+        return seasons
 
 
 
