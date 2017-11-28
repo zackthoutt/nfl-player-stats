@@ -135,6 +135,7 @@ class Player():
             'hof_induction_year': None
         }
         self.seasons_with_stats = []
+        self.game_stats = []
 
     def scrape_profile(self):
         """Scrape profile info for player"""
@@ -198,9 +199,20 @@ class Player():
             self.profile['hof_induction_year'] = profile_attributes[current_attribute].contents[2].contents[0]
             current_attribute += 1
 
-        print self.profile
-
         self.seasons_with_stats = self.get_seasons_with_stats(soup)
+
+    def scrape_season_gamelog(self, gamelog_url):
+        """Scrape player stats for a given year
+
+            Args:
+                - gamelog_url (str): URL to the stats for a given year
+
+            Returns:
+                - stats (dict): All of the player's stats for that year
+        """
+        response = self.scraper.get_page(self.profile_url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        stats_table = soup.find('table', {'id': 'stats'})
 
     def get_seasons_with_stats(self, profile_soup):
         """Scrape a list of seasons that has stats for the player
