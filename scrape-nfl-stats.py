@@ -4,7 +4,7 @@ from multiprocessing.dummy import Pool
 import time
 import shutil
 
-
+BASE_URL = 'https://www.pro-football-reference.com{0}'
 PLAYER_LIST_URL = 'https://www.pro-football-reference.com/players/{0}'
 PLAYER_PROFILE_URL = 'https://www.pro-football-reference.com/players/{0}/{1}'
 PLAYER_GAMELOG_URL = 'https://www.pro-football-reference.com/players/{0}/{1}/gamelog/{2}'
@@ -69,7 +69,7 @@ class Scraper():
         soup = BeautifulSoup(response.content, 'html.parser')
 
         players = soup.find('div', {'id': 'div_players'}).find_all('a')
-        return [player['href'] for player in players]
+        return [BASE_URL.format(player['href']) for player in players]
 
     def get_page(self, url, retry_count=0):
         """Use requests to get a page; retry when failures occur
