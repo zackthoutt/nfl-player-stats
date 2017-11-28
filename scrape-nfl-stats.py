@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from multiprocessing.dummy import Pool
 import time
 import shutil
+import re
 
 BASE_URL = 'https://www.pro-football-reference.com{0}'
 PLAYER_LIST_URL = 'https://www.pro-football-reference.com/players/{0}'
@@ -126,6 +127,11 @@ class Player():
 
         profile_attributes = profile_section.find_all('p')
         self.position = profile_attributes[1].contents[2].split('\n')[0].split(' ')[1]
+        self.height = profile_attributes[2].find('span', {'itemprop': 'height'}).contents[0]
+        self.weight = profile_attributes[2].find('span', {'itemprop': 'weight'}).contents[0].split('lb')[0]
+        self.birth_date = profile_attributes[3].find('span', {'itemprop': 'birthDate'})['data-birth']
+        birth_place_section = profile_attributes[3].find('span', {'itemprop': 'birthPlace'}).contents
+        self.birth_place = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
 
 
 if __name__ == '__main__':
