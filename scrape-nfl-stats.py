@@ -52,8 +52,10 @@ class Scraper():
         if self.clear_old_data:
             self.clear_data_dir()
         for letter in self.letters_to_scrape:
-            player_profile_links = self.get_players_for_letter(letter)
-            print player_profile_links
+            player_profile_urls = self.get_players_for_letter(letter)
+            for player_profile_url in player_profile_urls:
+                player = Player(player_profile_url, self)
+                player.scrape_profile()
 
     def get_players_for_letter(self, letter):
         """Get a list of player links for a letter of the alphabet.
@@ -97,6 +99,33 @@ class Scraper():
             shutil.rmtree(DATA_DIR)
         except FileNotFoundError:
             pass
+
+
+class Player():
+    """An NFL player"""
+
+    def __init__(self, profile_url, scraper):
+        """
+            Args:
+                - profile_url (str): URL to the player's profile
+                - scraper (obj): instance of Scraper class
+
+            Returns:
+                None
+        """
+        self.profile_url = profile_url
+        self.scraper = scraper
+
+    def scrape_profile(self):
+        """Scrape profile info for player"""
+        response = self.scraper.get_page(self.profile_url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        profile_section = soup.find('div', {'id': 'meta'})
+        self.name = profile_section.find('h1', {'itemprop': 'name'}).contents[0]
+
+        profile_attributes = profile_section.find_all('p')
+        self.position = profile_attributes[1].contents[2].split('\n')[0].split(' ')[1]
 
 
 if __name__ == '__main__':
