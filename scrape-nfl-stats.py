@@ -126,12 +126,33 @@ class Player():
         self.name = profile_section.find('h1', {'itemprop': 'name'}).contents[0]
 
         profile_attributes = profile_section.find_all('p')
-        self.position = profile_attributes[1].contents[2].split('\n')[0].split(' ')[1]
-        self.height = profile_attributes[2].find('span', {'itemprop': 'height'}).contents[0]
-        self.weight = profile_attributes[2].find('span', {'itemprop': 'weight'}).contents[0].split('lb')[0]
-        self.birth_date = profile_attributes[3].find('span', {'itemprop': 'birthDate'})['data-birth']
-        birth_place_section = profile_attributes[3].find('span', {'itemprop': 'birthPlace'}).contents
+        current_attribute = 1
+
+        self.position = profile_attributes[current_attribute].contents[2].split('\n')[0].split(' ')[1]
+        current_attribute += 1
+
+        self.height = profile_attributes[current_attribute].find('span', {'itemprop': 'height'}).contents[0]
+        self.weight = profile_attributes[current_attribute].find('span', {'itemprop': 'weight'}).contents[0].split('lb')[0]
+        current_attribute += 1
+
+        affiliation_section = profile_section.find('span', {'itemprop': 'affiliation'})
+        if affiliation_section is None:
+            self.current_team = None
+        else:
+            self.current_team = affiliation_section.contents[0].contents[0]
+            current_attribute += 1
+
+        self.birth_date = profile_attributes[current_attribute].find('span', {'itemprop': 'birthDate'})['data-birth']
+        birth_place_section = profile_attributes[current_attribute].find('span', {'itemprop': 'birthPlace'}).contents
         self.birth_place = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
+
+        death_section = profile_section.find('span', {'itemprop': 'deathDate'})
+        if death_section is None:
+            self.death_date = None
+        else:
+            self.death_date = death_section['data-death']
+            current_attribute += 1
+
 
 
 if __name__ == '__main__':
