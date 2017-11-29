@@ -241,7 +241,12 @@ class Player():
             stats['game_number'] = game.find('td', {'data-stat': 'game_num'}).contents[0]
             stats['age'] = game.find('td', {'data-stat': 'age'}).contents[0]
             stats['team'] = game.find('td', {'data-stat': 'team'}).contents[0].contents[0]
-            stats['game_at_home'] = not (game.find('td', {'data-stat': 'game_location'}).contents == ['@'])
+            if game.find('td', {'data-stat': 'game_location'}).contents == ['@']:
+                stats['game_location'] = 'A'
+            elif game.find('td', {'data-stat': 'game_location'}).contents == ['N']:
+                stats['game_location'] = 'N'
+            else:
+                stats['game_location'] = 'H'
             stats['opponent'] = game.find('td', {'data-stat': 'opp'}).contents[0].contents[0]
             result = game.find('td', {'data-stat': 'game_result'}).contents[0].contents[0]
             stats['game_won'] = (result.split(' ')[0] == 'W')
@@ -381,7 +386,7 @@ class Player():
             'game_number': None,
             'age': None,
             'team': None,
-            'game_at_home': None,
+            'game_location': None,
             'opponent': None,
             'game_won': None,
             'player_team_score': 0,
