@@ -216,13 +216,14 @@ class Player():
         for season in self.seasons_with_stats:
             if season['year'] == 'Career' or season['year'] == 'Postseason':
                 continue
-            self.scrape_season_gamelog(season['gamelog_url'])
+            self.scrape_season_gamelog(season['gamelog_url'], season['year'])
 
-    def scrape_season_gamelog(self, gamelog_url):
+    def scrape_season_gamelog(self, gamelog_url, year):
         """Scrape player stats for a given year
 
             Args:
                 - gamelog_url (str): URL to the stats for a given year
+                - year (int): The year the stats are for
 
             Returns:
                 - stats (dict): All of the player's stats for that year
@@ -239,7 +240,7 @@ class Player():
             games += playoff_table.find('tbody').find_all('tr')
 
         for game in games:
-            stats = self.make_player_game_stats(self.player_id)
+            stats = self.make_player_game_stats(self.player_id, year)
 
             stats['date'] = game.find('td', {'data-stat': 'game_date'}).contents[0].contents[0]
             stats['game_number'] = game.find('td', {'data-stat': 'game_num'}).contents[0]
@@ -401,18 +402,22 @@ class Player():
             if punting_blocked is not None and len(punting_blocked) > 0:
                 stats['punting_blocked'] = int(punting_blocked.contents[0])
 
+            self.game_stats.append(stats)
+
     @staticmethod
-    def make_player_game_stats(player_id):
+    def make_player_game_stats(player_id, year):
         """Factory method to return possible stats to collect for a player in a game
 
             Args:
                 - player_id (int): unique Id for the player
+                - year (int): The year the stats are for
 
             Returns:
                 - game_stats (dict): dictionary with game stats initialized
         """
         return {
             'player_id': player_id,
+            'year': year,
             # General stats
             'date': None,
             'game_number': None,
