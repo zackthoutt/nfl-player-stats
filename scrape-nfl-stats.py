@@ -366,8 +366,38 @@ class Player():
                 stats['defense_interception_yards'] = int(defense_interception_yards.contents[0])
 
             defense_safeties = game.find('td', {'data-stat': 'safety_md'})
-            if defense_safeties is not None:
+            if defense_safeties is not None and len(defense_safeties) > 0:
                 stats['defense_safeties'] = int(defense_safeties.contents[0])
+
+            # Collect kicking stats
+            point_after_attemps = game.find('td', {'data-stat': 'xpm'})
+            if point_after_attemps is not None and len(point_after_attemps) > 0:
+                stats['point_after_attemps'] = int(point_after_attemps.contents[0])
+
+            point_after_makes = game.find('td', {'data-stat': 'xpa'})
+            if point_after_makes is not None and len(point_after_makes) > 0:
+                stats['point_after_makes'] = int(point_after_makes.contents[0])
+
+            field_goal_attempts = game.find('td', {'data-stat': 'fga'})
+            if field_goal_attempts is not None and len(field_goal_attempts) > 0:
+                stats['field_goal_attempts'] = int(field_goal_attempts.contents[0])
+
+            field_goal_makes = game.find('td', {'data-stat': 'fgm'})
+            if field_goal_makes is not None and len(field_goal_makes) > 0:
+                stats['field_goal_makes'] = int(field_goal_makes.contents[0])
+
+            # Collect punting stats
+            punting_attempts = game.find('td', {'data-stat': 'punt'})
+            if punting_attempts is not None and len(punting_attempts) > 0:
+                stats['punting_attempts'] = int(punting_attempts.contents[0])
+
+            punting_yards = game.find('td', {'data-stat': 'punt_yds'})
+            if punting_yards is not None and len(punting_yards) > 0:
+                stats['punting_yards'] = int(punting_yards.contents[0])
+
+            punting_blocked = game.find('td', {'data-stat': 'punt_blocked'})
+            if punting_blocked is not None and len(punting_blocked) > 0:
+                stats['punting_blocked'] = int(punting_blocked.contents[0])
 
     @staticmethod
     def make_player_game_stats(player_id):
