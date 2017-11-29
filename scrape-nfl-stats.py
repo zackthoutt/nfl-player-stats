@@ -152,6 +152,7 @@ class Player():
 
         profile_section = soup.find('div', {'id': 'meta'})
         self.profile['name'] = profile_section.find('h1', {'itemprop': 'name'}).contents[0]
+        print 'scaping {}'.format(self.profile['name'])
 
         profile_attributes = profile_section.find_all('p')
         current_attribute = 1
@@ -171,7 +172,8 @@ class Player():
 
         self.profile['birth_date'] = profile_attributes[current_attribute].find('span', {'itemprop': 'birthDate'})['data-birth']
         birth_place_section = profile_attributes[current_attribute].find('span', {'itemprop': 'birthPlace'}).contents
-        self.profile['birth_place'] = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
+        if len(birth_place_section) > 0:
+            self.profile['birth_place'] = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
         current_attribute += 1
 
         death_section = profile_section.find('span', {'itemprop': 'deathDate'})
@@ -227,41 +229,9 @@ class Player():
         """
         response = self.scraper.get_page(gamelog_url)
         soup = BeautifulSoup(response.content, 'html.parser')
-
-        passing_stats_available = False
-        rushing_stats_available = False
-        receiving_stats_available = False
-        kick_return_stats_available = False
-        defense_stats_available = False
-        fumble_stats_available = False
-        kicking_stats_available = False
-        punting_stats_available = False
-
-        # Determine which stats each player has
         stats_table = soup.find('table', {'id': 'stats'})
-        stat_sections = stats_table.find('thead').find('tr', {'class': 'over_header'}).find_all('th')
-        for section in stat_sections:
-            if section.contents is None or len(section.contents) == 0:
-                continue
-            section_title = section.contents[0]
-            if section_title == 'Passing':
-                passing_stats_available = True
-            elif section_title == 'Rushing':
-                rushing_stats_available = True
-            elif section_title == 'Receiving':
-                receiving_stats_available = True
-            elif section_title == 'Kick Returns':
-                kick_return_stats_available = True
-            elif section_title == 'Sacks & Tackles':
-                defense_stats_available = True
-            elif section_title == 'Fumbles':
-                fumble_stats_available = True
-            elif section_title == 'Scoring':
-                field_goals_made = stats_table.find('th', {'data-stat', 'xpm'})
-                if field_goals_made is not None:
-                    kicking_stats_available = True
-            elif section_title == 'Punting':
-                punting_stats_available = True
+        if stats_table is None:
+            return False
 
         games = stats_table.find('tbody').find_all('tr')
         for game in games:
@@ -277,8 +247,40 @@ class Player():
             stats['game_won'] = (result.split(' ')[0] == 'W')
             stats['player_team_score'] = result.split(' ')[1].split('-')[0]
             stats['opponent_score'] = result.split(' ')[1].split('-')[1]
-            print stats
 
+            pass_attempts = game.find('td', {'data-stat': 'pass_cmp'})
+            if pass_attempts is not None:
+                stats['passing_attempts'] = int(pass_attempts.contents[0])
+
+            pass_completions = game.find('td', {'data-stat': 'pass_att'})
+            if pass_completions is not None:
+                stats['passing_completions'] = int(pass_completions.contents[0])
+
+            pass_yards = game.find('td', {'data-stat': 'pass_yds'})
+            if pass_yards is not None:
+                stats['passing_yards'] = int(pass_yards.contents[0])
+
+            pass_touchdowns = game.find('td', {'data-stat': 'pass_td'})
+            if pass_touchdowns is not None:
+                stats['passing_touchdowns'] = int(pass_touchdowns.contents[0])
+
+            pass_interceptions = game.find('td', {'data-stat': 'pass_int'})
+            if pass_interceptions is not None:
+                stats['passing_interceptions'] = int(pass_interceptions.contents[0])
+
+            pass_rating = game.find('td', {'data-stat': 'pass_rating'})
+            if pass_rating is not None:
+                if len(pass_rating.contents) > 0:
+                    stats['passing_rating'] = float(pass_rating.contents[0])
+
+            pass_sacks = game.find('td', {'data-stat': 'pass_sacked'})
+            if pass_sacks is not None:
+                stats['passing_sacks'] = int(pass_sacks.contents[0])
+
+            pass_sacks_yards_lost = game.find('td', {'data-stat': 'pass_sacked_yds'})
+            if pass_sacks_yards_lost is not None:
+                if len(pass_sacks_yards_lost) > 0:
+                    stats['passing_sacks_yards_lost'] = int(pass_sacks_yards_lost.contents[0])
 
     @staticmethod
     def make_player_game_stats(player_id):
@@ -306,6 +308,7 @@ class Player():
             'passing_attempts': 0,
             'passing_completions': 0,
             'passing_yards': 0,
+            'passing_rating': 0,
             'passing_touchdowns': 0,
             'passing_interceptions': 0,
             'passing_sacks': 0,
@@ -369,7 +372,7 @@ class Player():
 
 
 if __name__ == '__main__':
-    letters_to_scrape = ['A']
+    letters_to_scrape = ['E']
     nfl_scraper = Scraper(letters_to_scrape=letters_to_scrape, num_jobs=1, clear_old_data=False)
 
     nfl_scraper.scrape_site()
