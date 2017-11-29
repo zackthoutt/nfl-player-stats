@@ -229,11 +229,15 @@ class Player():
         """
         response = self.scraper.get_page(gamelog_url)
         soup = BeautifulSoup(response.content, 'html.parser')
-        stats_table = soup.find('table', {'id': 'stats'})
-        if stats_table is None:
+        regular_season_table = soup.find('table', {'id': 'stats'})
+        if regular_season_table is None:
             return False
+        games = regular_season_table.find('tbody').find_all('tr')
 
-        games = stats_table.find('tbody').find_all('tr')
+        playoff_table = soup.find('table', {'id': 'stats_playoffs'})
+        if playoff_table is not None:
+            games += playoff_table.find('tbody').find_all('tr')
+
         for game in games:
             stats = self.make_player_game_stats(self.player_id)
 
