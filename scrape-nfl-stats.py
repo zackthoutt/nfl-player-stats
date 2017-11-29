@@ -339,6 +339,31 @@ class Player():
             if punt_return_touchdowns is not None:
                 stats['punt_return_touchdowns'] = int(punt_return_touchdowns.contents[0])
 
+            # Collect defensive stats
+            defense_sacks = game.find('td', {'data-stat': 'sacks'})
+            if defense_sacks is not None:
+                stats['defense_sacks'] = int(defense_sacks.contents[0])
+
+            defense_tackles = game.find('td', {'data-stat': 'tackles_solo'})
+            if defense_tackles is not None:
+                stats['defense_tackles'] = int(defense_tackles.contents[0])
+
+            defense_tackle_assists = game.find('td', {'data-stat': 'tackles_assists'})
+            if defense_tackle_assists is not None:
+                stats['defense_tackle_assists'] = int(defense_tackle_assists.contents[0])
+
+            defense_interceptions = game.find('td', {'data-stat': 'def_int'})
+            if defense_interceptions is not None:
+                stats['defense_interceptions'] = int(defense_interceptions.contents[0])
+
+            defense_interception_yards = game.find('td', {'data-stat': 'def_int_yds'})
+            if defense_interception_yards is not None:
+                stats['defense_interception_yards'] = int(defense_interception_yards.contents[0])
+
+            defense_safeties = game.find('td', {'data-stat': 'safety_md'})
+            if defense_safeties is not None:
+                stats['defense_safeties'] = int(defense_safeties.contents[0])
+
     @staticmethod
     def make_player_game_stats(player_id):
         """Factory method to return possible stats to collect for a player in a game
@@ -394,6 +419,7 @@ class Player():
             'defense_interceptions': 0,
             'defense_interception_yards': 0,
             'defense_interception_touchdowns': 0,
+            'defense_safeties': 0,
             # Fumbles
             'forced_fumbles': 0,
             'fumbles': 0,
