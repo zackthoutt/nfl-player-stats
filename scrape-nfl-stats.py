@@ -255,114 +255,112 @@ class Player():
 
             # Collect passing stats
             pass_attempts = game.find('td', {'data-stat': 'pass_cmp'})
-            if pass_attempts is not None:
+            if pass_attempts is not None and len(pass_attempts) > 0:
                 stats['passing_attempts'] = int(pass_attempts.contents[0])
 
             pass_completions = game.find('td', {'data-stat': 'pass_att'})
-            if pass_completions is not None:
+            if pass_completions is not None and len(pass_completions) > 0:
                 stats['passing_completions'] = int(pass_completions.contents[0])
 
             pass_yards = game.find('td', {'data-stat': 'pass_yds'})
-            if pass_yards is not None:
+            if pass_yards is not None and len(pass_yards) > 0:
                 stats['passing_yards'] = int(pass_yards.contents[0])
 
             pass_touchdowns = game.find('td', {'data-stat': 'pass_td'})
-            if pass_touchdowns is not None:
+            if pass_touchdowns is not None and len(pass_touchdowns) > 0:
                 stats['passing_touchdowns'] = int(pass_touchdowns.contents[0])
 
             pass_interceptions = game.find('td', {'data-stat': 'pass_int'})
-            if pass_interceptions is not None:
+            if pass_interceptions is not None and len(pass_interceptions) > 0:
                 stats['passing_interceptions'] = int(pass_interceptions.contents[0])
 
             pass_rating = game.find('td', {'data-stat': 'pass_rating'})
-            if pass_rating is not None:
-                if len(pass_rating.contents) > 0:
-                    stats['passing_rating'] = float(pass_rating.contents[0])
+            if pass_rating is not None and len(pass_rating) > 0:
+                stats['passing_rating'] = float(pass_rating.contents[0])
 
             pass_sacks = game.find('td', {'data-stat': 'pass_sacked'})
-            if pass_sacks is not None:
+            if pass_sacks is not None and len(pass_sacks) > 0:
                 stats['passing_sacks'] = int(pass_sacks.contents[0])
 
             pass_sacks_yards_lost = game.find('td', {'data-stat': 'pass_sacked_yds'})
-            if pass_sacks_yards_lost is not None:
-                if len(pass_sacks_yards_lost) > 0:
-                    stats['passing_sacks_yards_lost'] = int(pass_sacks_yards_lost.contents[0])
+            if pass_sacks_yards_lost is not None and len(pass_sacks_yards_lost) > 0:
+                stats['passing_sacks_yards_lost'] = int(pass_sacks_yards_lost.contents[0])
 
             # Collect rushing stats
             rushing_attempts = game.find('td', {'data-stat': 'rush_att'})
-            if rushing_attempts is not None:
+            if rushing_attempts is not None and len(rushing_attempts) > 0:
                 stats['rushing_attempts'] = int(rushing_attempts.contents[0])
 
             rushing_yards = game.find('td', {'data-stat': 'rush_yds'})
-            if rushing_yards is not None:
+            if rushing_yards is not None and len(rushing_yards) > 0:
                 stats['rushing_yards'] = int(rushing_yards.contents[0])
 
             rushing_touchdowns = game.find('td', {'data-stat': 'rush_td'})
-            if rushing_touchdowns is not None:
+            if rushing_touchdowns is not None and len(rushing_touchdowns) > 0:
                 stats['rushing_touchdowns'] = int(rushing_touchdowns.contents[0])
 
             # Collect receiving stats
             receiving_targets = game.find('td', {'data-stat': 'targets'})
-            if receiving_targets is not None:
+            if receiving_targets is not None and len(receiving_targets) > 0:
                 stats['receiving_targets'] = int(receiving_targets.contents[0])
 
             receiving_receptions = game.find('td', {'data-stat': 'rec'})
-            if receiving_receptions is not None:
+            if receiving_receptions is not None and len(receiving_receptions) > 0:
                 stats['receiving_receptions'] = int(receiving_receptions.contents[0])
 
             receiving_yards = game.find('td', {'data-stat': 'rec_yds'})
-            if receiving_yards is not None:
+            if receiving_yards is not None and len(receiving_yards) > 0:
                 stats['receiving_yards'] = int(receiving_yards.contents[0])
 
             receiving_touchdowns = game.find('td', {'data-stat': 'rec_td'})
-            if receiving_touchdowns is not None:
+            if receiving_touchdowns is not None and len(receiving_touchdowns) > 0:
                 stats['receiving_touchdowns'] = int(receiving_touchdowns.contents[0])
 
             # Collect kick return stats
             kick_return_attempts = game.find('td', {'data-stat': 'kick_ret'})
-            if kick_return_attempts is not None:
+            if kick_return_attempts is not None and len(kick_return_attempts) > 0:
                 stats['kick_return_attempts'] = int(kick_return_attempts.contents[0])
 
             kick_return_yards = game.find('td', {'data-stat': 'kick_ret_yds'})
-            if kick_return_yards is not None:
+            if kick_return_yards is not None and len(kick_return_yards) > 0:
                 stats['kick_return_yards'] = int(kick_return_yards.contents[0])
 
             kick_return_touchdowns = game.find('td', {'data-stat': 'kick_ret_td'})
-            if kick_return_touchdowns is not None:
+            if kick_return_touchdowns is not None and len(kick_return_touchdowns) > 0:
                 stats['kick_return_touchdowns'] = int(kick_return_touchdowns.contents[0])
 
             # Collect punt return stats
             punt_return_attempts = game.find('td', {'data-stat': 'punt_ret'})
-            if punt_return_attempts is not None:
+            if punt_return_attempts is not None and len(punt_return_attempts) > 0:
                 stats['punt_return_attempts'] = int(punt_return_attempts.contents[0])
 
             punt_return_yards = game.find('td', {'data-stat': 'punt_ret_yds'})
-            if punt_return_yards is not None:
+            if punt_return_yards is not None and len(punt_return_yards) > 0:
                 stats['punt_return_yards'] = int(punt_return_yards.contents[0])
 
             punt_return_touchdowns = game.find('td', {'data-stat': 'punt_ret_td'})
-            if punt_return_touchdowns is not None:
+            if punt_return_touchdowns is not None and len(punt_return_touchdowns) > 0:
                 stats['punt_return_touchdowns'] = int(punt_return_touchdowns.contents[0])
 
             # Collect defensive stats
             defense_sacks = game.find('td', {'data-stat': 'sacks'})
-            if defense_sacks is not None:
-                stats['defense_sacks'] = int(defense_sacks.contents[0])
+            if defense_sacks is not None and len(defense_sacks) > 0:
+                stats['defense_sacks'] = float(defense_sacks.contents[0])
 
             defense_tackles = game.find('td', {'data-stat': 'tackles_solo'})
-            if defense_tackles is not None:
+            if defense_tackles is not None and len(defense_tackles) > 0:
                 stats['defense_tackles'] = int(defense_tackles.contents[0])
 
             defense_tackle_assists = game.find('td', {'data-stat': 'tackles_assists'})
-            if defense_tackle_assists is not None:
+            if defense_tackle_assists is not None and len(defense_tackle_assists) > 0:
                 stats['defense_tackle_assists'] = int(defense_tackle_assists.contents[0])
 
             defense_interceptions = game.find('td', {'data-stat': 'def_int'})
-            if defense_interceptions is not None:
+            if defense_interceptions is not None and len(defense_interceptions) > 0:
                 stats['defense_interceptions'] = int(defense_interceptions.contents[0])
 
             defense_interception_yards = game.find('td', {'data-stat': 'def_int_yds'})
-            if defense_interception_yards is not None:
+            if defense_interception_yards is not None and len(defense_interception_yards) > 0:
                 stats['defense_interception_yards'] = int(defense_interception_yards.contents[0])
 
             defense_safeties = game.find('td', {'data-stat': 'safety_md'})
