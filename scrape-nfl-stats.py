@@ -20,7 +20,7 @@ DATA_DIR = 'data'
 class Scraper():
     """Scraper for pro-football-reference.com to collect NFL player stats"""
 
-    def __init__(self, letters_to_scrape=['A'], num_jobs=1, clear_old_data=True):
+    def __init__(self, letters_to_scrape=['A'], num_jobs=1, clear_old_data=True, first_player_id=1):
         """Initialize the scraper to get player stats
 
                 Args:
@@ -31,6 +31,7 @@ class Scraper():
                       utilize time spent waiting for the server to respond.
                     - clear_old_data (boolean): Whether or not the data file should be wiped before
                       starting the scrape.
+                    - first_player_id (int): The first ID for a player (set if you are rerunning to avoid duplicates)
 
                 Returns:
                     None
@@ -41,6 +42,7 @@ class Scraper():
         self.session = requests.Session()
         self.start_time = time.time()
         self.cross_process_player_count = 0
+        self.first_player_id = first_player_id
 
         if num_jobs > 1:
             self.multiprocessing = True
@@ -52,12 +54,14 @@ class Scraper():
         """Pool workers to scrape players by first letter of last name"""
         if self.clear_old_data:
             self.clear_data_dir()
+        player_id = self.first_player_id
         for letter in self.letters_to_scrape:
             player_profile_urls = self.get_players_for_letter(letter)
             for player_profile_url in player_profile_urls:
-                player = Player(player_profile_url, self)
+                player = Player(player_id, player_profile_url, self)
                 player.scrape_profile()
                 player.scrape_player_stats()
+                player_id += 1
 
     def get_players_for_letter(self, letter):
         """Get a list of player links for a letter of the alphabet.
@@ -106,18 +110,21 @@ class Scraper():
 class Player():
     """An NFL player"""
 
-    def __init__(self, profile_url, scraper):
+    def __init__(self, player_id, profile_url, scraper):
         """
             Args:
+                - player_id (int): Unique ID for player
                 - profile_url (str): URL to the player's profile
                 - scraper (obj): instance of Scraper class
 
             Returns:
                 None
         """
+        self.player_id = player_id
         self.profile_url = profile_url
         self.scraper = scraper
         self.profile = {
+            'player_id': player_id,
             'name': None,
             'position': None,
             'height': None,
@@ -258,7 +265,7 @@ class Player():
 
         games = stats_table.find('tbody').find_all('tr')
         for game in games:
-            stats = self.make_player_game_stats()
+            stats = self.make_player_game_stats(self.player_id)
 
             stats['date'] = game.find('td', {'data-stat': 'game_date'}).contents[0].contents[0]
             stats['game_number'] = game.find('td', {'data-stat': 'game_num'}).contents[0]
@@ -270,16 +277,21 @@ class Player():
             stats['game_won'] = (result.split(' ')[0] == 'W')
             stats['player_team_score'] = result.split(' ')[1].split('-')[0]
             stats['opponent_score'] = result.split(' ')[1].split('-')[1]
-            print stats, '\n'
+            print stats
+
 
     @staticmethod
-    def make_player_game_stats():
+    def make_player_game_stats(player_id):
         """Factory method to return possible stats to collect for a player in a game
+
+            Args:
+                - player_id (int): unique Id for the player
 
             Returns:
                 - game_stats (dict): dictionary with game stats initialized
         """
         return {
+            'player_id': player_id,
             # General stats
             'date': None,
             'game_number': None,
