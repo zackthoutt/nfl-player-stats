@@ -453,12 +453,6 @@ class Player():
             'defense_interception_yards': 0,
             'defense_interception_touchdowns': 0,
             'defense_safeties': 0,
-            # Fumbles
-            'forced_fumbles': 0,
-            'fumbles': 0,
-            'fumble_recoveries': 0,
-            'fumble_recovery_yards': 0,
-            'fumble_recovery_touchdowns': 0,
             # Kicking
             'point_after_attemps': 0,
             'point_after_makes': 0,
