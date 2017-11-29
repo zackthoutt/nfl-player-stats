@@ -57,6 +57,7 @@ class Scraper():
             for player_profile_url in player_profile_urls:
                 player = Player(player_profile_url, self)
                 player.scrape_profile()
+                player.scrape_player_stats()
 
     def get_players_for_letter(self, letter):
         """Get a list of player links for a letter of the alphabet.
@@ -201,6 +202,13 @@ class Player():
 
         self.seasons_with_stats = self.get_seasons_with_stats(soup)
 
+    def scrape_player_stats(self):
+        """Scrape the stats for all available games for a player"""
+        for season in self.seasons_with_stats:
+            if season['year'] == 'Career' or season['year'] == 'Postseason':
+                continue
+            self.scrape_season_gamelog(season['gamelog_url'])
+
     def scrape_season_gamelog(self, gamelog_url):
         """Scrape player stats for a given year
 
@@ -210,9 +218,59 @@ class Player():
             Returns:
                 - stats (dict): All of the player's stats for that year
         """
-        response = self.scraper.get_page(self.profile_url)
+        response = self.scraper.get_page(gamelog_url)
         soup = BeautifulSoup(response.content, 'html.parser')
+
+        passing_stats_available = False
+        rushing_stats_available = False
+        receiving_stats_available = False
+        kick_return_stats_available = False
+        defense_stats_available = False
+        fumble_stats_available = False
+        kicking_stats_available = False
+        punting_stats_available = False
+
+        # Determine which stats each player has
         stats_table = soup.find('table', {'id': 'stats'})
+        stat_sections = stats_table.find('thead').find('tr', {'class': 'over_header'}).find_all('th')
+        for section in stat_sections:
+            if section.contents is None or len(section.contents) == 0:
+                continue
+            section_title = section.contents[0]
+            if section_title == 'Passing':
+                passing_stats_available = True
+            elif section_title == 'Rushing':
+                rushing_stats_available = True
+            elif section_title == 'Receiving':
+                receiving_stats_available = True
+            elif section_title == 'Kick Returns':
+                kick_return_stats_available = True
+            elif section_title == 'Sacks & Tackles':
+                defense_stats_available = True
+            elif section_title == 'Fumbles':
+                fumble_stats_available = True
+            elif section_title == 'Scoring':
+                field_goals_made = stats_table.find('th', {'data-stat', 'xpm'})
+                if field_goals_made is not None:
+                    kicking_stats_available = True
+            elif section_title == 'Punting':
+                punting_stats_available = True
+
+        games = stats_table.find('tbody').find_all('tr')
+        for game in games:
+            stats = self.make_player_game_stats()
+
+            stats['date'] = game.find('td', {'data-stat': 'game_date'}).contents[0].contents[0]
+            stats['game_number'] = game.find('td', {'data-stat': 'game_num'}).contents[0]
+            stats['age'] = game.find('td', {'data-stat': 'age'}).contents[0]
+            stats['team'] = game.find('td', {'data-stat': 'team'}).contents[0].contents[0]
+            stats['game_at_home'] = not (game.find('td', {'data-stat': 'game_location'}).contents == ['@'])
+            stats['opponent'] = game.find('td', {'data-stat': 'opp'}).contents[0].contents[0]
+            result = game.find('td', {'data-stat': 'game_result'}).contents[0].contents[0]
+            stats['game_won'] = (result.split(' ')[0] == 'W')
+            stats['player_team_score'] = result.split(' ')[1].split('-')[0]
+            stats['opponent_score'] = result.split(' ')[1].split('-')[1]
+            print stats, '\n'
 
     @staticmethod
     def make_player_game_stats():
@@ -252,7 +310,7 @@ class Player():
             # Kick return stats
             'kick_return_attempts': 0,
             'kick_return_yards': 0,
-            'kick_return_touchdowns': 0
+            'kick_return_touchdowns': 0,
             # Defense
             'defense_sacks': 0,
             'defense_tackles': 0,
@@ -292,7 +350,7 @@ class Player():
             for season in gamelog_list:
                 seasons.append({
                     'year': season.contents[0].contents[0],
-                    'gamelog_link': BASE_URL.format(season.contents[0]['href'])
+                    'gamelog_url': BASE_URL.format(season.contents[0]['href'])
                 })
         return seasons
 
