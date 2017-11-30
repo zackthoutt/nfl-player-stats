@@ -4,6 +4,8 @@ from multiprocessing.dummy import Pool
 import time
 import shutil
 import re
+import os
+import json
 
 BASE_URL = 'https://www.pro-football-reference.com{0}'
 PLAYER_LIST_URL = 'https://www.pro-football-reference.com/players/{0}'
@@ -15,7 +17,8 @@ HEADERS = {
                    '(KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36')
 }
 
-DATA_DIR = 'data'
+PROFILE_DIR = 'profile_data'
+STATS_DIR = 'stats_data'
 
 class Scraper():
     """Scraper for pro-football-reference.com to collect NFL player stats"""
@@ -53,15 +56,57 @@ class Scraper():
     def scrape_site(self):
         """Pool workers to scrape players by first letter of last name"""
         if self.clear_old_data:
-            self.clear_data_dir()
+            self.clear_data()
         player_id = self.first_player_id
         for letter in self.letters_to_scrape:
             player_profile_urls = self.get_players_for_letter(letter)
             for player_profile_url in player_profile_urls:
                 player = Player(player_id, player_profile_url, self)
-                player.scrape_profile()
-                player.scrape_player_stats()
+                try:
+                    player.scrape_profile()
+                    player.scrape_player_stats()
+                except:
+                    print('There was a problem parsing stats for {}'.format(player_profile_url))
+                    continue
+                self.save_player_profile(player.profile)
+                self.save_player_game_stats(player.game_stats, player.player_id, player.profile['name'])
                 player_id += 1
+
+    def save_player_profile(self, profile):
+        """Save a player's profile as JSON
+
+            Args:
+                - profile (dict): Player profile data
+
+            Return:
+                None
+        """
+        filename = '{}/{}_{}.json'.format(PROFILE_DIR, profile['player_id'], profile['name'].replace(' ', '-'))
+        try:
+            os.makedirs(PROFILE_DIR)
+        except OSError:
+            pass
+        with open(filename, 'w') as fout:
+            json.dump(profile, fout)
+
+    def save_player_game_stats(self, games, player_id, player_name):
+        """Save a list of player games with stats info
+
+            Args:
+                - games (dict[]): List of game stats
+                - player_id (int): ID of the player the games belong to
+                - player_name (str): Name of the player the game stats belong to
+
+            Return:
+                None
+        """
+        filename = '{}/{}.json'.format(STATS_DIR, player_id, player_name.replace(' ', '-'))
+        try:
+            os.makedirs(STATS_DIR)
+        except OSError:
+            pass
+        with open(filename, 'w') as fout:
+            json.dump(games, fout)
 
     def get_players_for_letter(self, letter):
         """Get a list of player links for a letter of the alphabet.
@@ -99,10 +144,14 @@ class Scraper():
             else:
                 raise
 
-    def clear_data_dir(self):
-        """Clears the scraped data"""
+    def clear_data(self):
+        """Clear the data directories"""
         try:
-            shutil.rmtree(DATA_DIR)
+            shutil.rmtree(PROFILE_DIR)
+        except FileNotFoundError:
+            pass
+        try:
+            shutil.rmtree(STATS_DIR)
         except FileNotFoundError:
             pass
 
@@ -152,7 +201,7 @@ class Player():
 
         profile_section = soup.find('div', {'id': 'meta'})
         self.profile['name'] = profile_section.find('h1', {'itemprop': 'name'}).contents[0]
-        print 'scaping {}'.format(self.profile['name'])
+        print('scaping {}'.format(self.profile['name']))
 
         profile_attributes = profile_section.find_all('p')
         current_attribute = 1
@@ -161,20 +210,30 @@ class Player():
         self.profile['position'] = profile_attributes[current_attribute].contents[2].split('\n')[0].split(' ')[1]
         current_attribute += 1
 
-        self.profile['height'] = profile_attributes[current_attribute].find('span', {'itemprop': 'height'}).contents[0]
-        self.profile['weight'] = profile_attributes[current_attribute].find('span', {'itemprop': 'weight'}).contents[0].split('lb')[0]
-        current_attribute += 1
+        height = profile_attributes[current_attribute].find('span', {'itemprop': 'height'})
+        if height is not None:
+            self.profile['height'] = height.contents[0]
+        weight = profile_attributes[current_attribute].find('span', {'itemprop': 'weight'})
+        if weight is not None:
+            self.profile['weight'] = weight.contents[0].split('lb')[0]
+        if height is not None or weight is not None:
+            current_attribute += 1
 
         affiliation_section = profile_section.find('span', {'itemprop': 'affiliation'})
         if affiliation_section is not None:
             self.profile['current_team'] = affiliation_section.contents[0].contents[0]
             current_attribute += 1
 
-        self.profile['birth_date'] = profile_attributes[current_attribute].find('span', {'itemprop': 'birthDate'})['data-birth']
+        birth_date = profile_attributes[current_attribute].find('span', {'itemprop': 'birthDate'})
+        if birth_date is not None:
+            self.profile['birth_date'] = birth_date['data-birth']
         birth_place_section = profile_attributes[current_attribute].find('span', {'itemprop': 'birthPlace'}).contents
-        if len(birth_place_section) > 0:
+        try:
             self.profile['birth_place'] = re.split('\xa0', birth_place_section[0])[1] + ' ' + birth_place_section[1].contents[0]
-        current_attribute += 1
+        except IndexError:
+            pass
+        if birth_date is not None or len(birth_place_section) > 0:
+            current_attribute += 1
 
         death_section = profile_section.find('span', {'itemprop': 'deathDate'})
         if death_section is not None:
@@ -496,6 +555,6 @@ class Player():
 
 if __name__ == '__main__':
     letters_to_scrape = ['E']
-    nfl_scraper = Scraper(letters_to_scrape=letters_to_scrape, num_jobs=1, clear_old_data=False)
+    nfl_scraper = Scraper(letters_to_scrape=letters_to_scrape, num_jobs=1, clear_old_data=True)
 
     nfl_scraper.scrape_site()
