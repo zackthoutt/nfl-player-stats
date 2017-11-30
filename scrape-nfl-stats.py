@@ -6,6 +6,8 @@ import shutil
 import re
 import os
 import json
+import string
+import glob
 
 BASE_URL = 'https://www.pro-football-reference.com{0}'
 PLAYER_LIST_URL = 'https://www.pro-football-reference.com/players/{0}'
@@ -71,6 +73,30 @@ class Scraper():
                 self.save_player_profile(player.profile)
                 self.save_player_game_stats(player.game_stats, player.player_id, player.profile['name'])
                 player_id += 1
+        self.condense_data()
+
+    def condense_data(self):
+        """Condense data into two files, a profile file and a stats file"""
+        print('Condensing Data...')
+        condensed_profile_data = []
+        all_profile_files = glob.glob('{}/*.json'.format(PROFILE_DIR))
+        for file in all_profile_files:
+            with open(file, 'rb') as fin:
+                condensed_profile_data.append(json.load(fin))
+        print('{} player profiles condensed'.format(len(condensed_profile_data)))
+        filename = 'profiles_{}.json'.format(time.time())
+        with open(filename, 'w') as fout:
+            json.dump(condensed_profile_data, fout)
+
+        condensed_game_data = []
+        all_game_files = glob.glob('{}/*.json'.format(STATS_DIR))
+        for file in all_game_files:
+            with open(file, 'rb') as fin:
+                condensed_game_data += json.load(fin)
+        print('{} player seasons condensed'.format(len(condensed_game_data)))
+        filename = 'games_{}.json'.format(time.time())
+        with open(filename, 'w') as fout:
+            json.dump(condensed_game_data, fout)
 
     def save_player_profile(self, profile):
         """Save a player's profile as JSON
@@ -100,7 +126,7 @@ class Scraper():
             Return:
                 None
         """
-        filename = '{}/{}.json'.format(STATS_DIR, player_id, player_name.replace(' ', '-'))
+        filename = '{}/{}_{}.json'.format(STATS_DIR, player_id, player_name.replace(' ', '-'))
         try:
             os.makedirs(STATS_DIR)
         except OSError:
@@ -552,9 +578,8 @@ class Player():
         return seasons
 
 
-
 if __name__ == '__main__':
-    letters_to_scrape = ['E']
-    nfl_scraper = Scraper(letters_to_scrape=letters_to_scrape, num_jobs=1, clear_old_data=True)
+    letters_to_scrape = list(string.ascii_uppercase)
+    nfl_scraper = Scraper(letters_to_scrape=letters_to_scrape, num_jobs=10, clear_old_data=False)
 
     nfl_scraper.scrape_site()
