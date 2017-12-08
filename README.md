@@ -5,11 +5,15 @@ Ever since I was in 8th grade I've dreamed of building an AI that could draft pl
 
 From what I've been able to determine researching, this is the most complete public source of NFL player stats available online. I scraped every NFL player in their database going back to the 1940s. That's over 25,000 players who have played over 1,000,000 football games. 
 
-**The data was scraped 12/1/17-12/4/17**
-
 I finished in last place this year in fantasy football, so hopefully this data will help me improve my performance next year. Only 8 months until draft day! 
 
 My ultimate goal is to create an AI that ranks players every week, which could be used to set lineups and draft players. I'm also interested in predicting the winners of games. If you have any ideas or would like to collaborate, please [contact me](mailto:me@zackthoutt.com)!
+
+# Featured on Kaggle
+
+**The data was scraped 12/1/17-12/4/17**
+
+[Kaggle Dataset](https://www.kaggle.com/zynicide/nfl-football-player-stats)
 
 ---
 
