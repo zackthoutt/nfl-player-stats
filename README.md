@@ -9,11 +9,11 @@ From what I've been able to determine researching, this is the most complete pub
 
 I finished in last place this year in fantasy football, so hopefully this data will help me improve my performance next year. Only 8 months until draft day! 
 
-My ultimate goal is to create an AI that ranks players every week, which could be used to set lineups and draft players. If you have any ideas or would like to collaborate, please ![contact me](mailto:me@zackthoutt.com)!
+My ultimate goal is to create an AI that ranks players every week, which could be used to set lineups and draft players. I'm also interested in predicting the winners of games. If you have any ideas or would like to collaborate, please [contact me](mailto:me@zackthoutt.com)!
 
 ---
 
-The data is broken into two parts. There is a player table where each player has been asigned an ID and a stats table that has one entry per game played. These tables can be linked together using the player ID.
+The data is broken into two parts. There is a players table where each player has been asigned an ID and a game stats table that has one entry per game played. These tables can be linked together using the player ID.
 
 ## Player Profile Fields
 
@@ -35,8 +35,6 @@ The data is broken into two parts. There is a player table where each player has
 - *Draft Year*: The year the player was drafted. Null if the player was not drafted.
 - *Current Salary Cap Hit*: The player's current salary hit for their current team. Null if the player is not currently active on a team.
 - *Hall of Fame Induction Year*: The year the player was inducted into the NFL Hall of Fame. Null if the player has not been inducted into the HOF yet.
-
----
 
 ### Game Stats Fields
 
@@ -83,7 +81,7 @@ Note that if there are games missing in the season for a player (i.e. the player
 
 - *Kick Return Attempts*: The number of times the player attempted to return a kick.
 - *Kick Return Yards*: The cumulative number of yards the player returned kicks for.
-- *Kick Return touchdowns*: The number of touchdowns the player scored through kick returns.
+- *Kick Return Touchdowns*: The number of touchdowns the player scored through kick returns.
 - *Punt Return Attempts*: The number of times the player attempted to return a punt.
 - *Punt Return Yards*: The cumulative number of yards the player returned punts for.
 - *Punt Return Touchdowns*: The number of touchdowns the player scored through punt returns.
@@ -116,7 +114,7 @@ Note that if there are games missing in the season for a player (i.e. the player
 
 ### Contributing
 
-If you would like to contribute, please feel free to put up a PR or reach out to me with ideas. I woulud love to collaborate with some fellow football fans on this project. 
+If you would like to contribute, please feel free to put up a PR or reach out to me with ideas. I would love to collaborate with some fellow football fans on this project. 
 
 # Connect with me
 
