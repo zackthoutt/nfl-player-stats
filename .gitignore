@@ -1,3 +1,9 @@
+# Repo
+/profile_data
+/stats_data
+/games_*.json
+/profiles_*.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
