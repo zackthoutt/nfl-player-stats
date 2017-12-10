@@ -67,6 +67,8 @@ class Scraper():
                 try:
                     player.scrape_profile()
                     player.scrape_player_stats()
+                except (KeyboardInterrupt, SystemExit):
+                    raise
                 except:
                     print('There was a problem parsing stats for {}'.format(player_profile_url))
                     continue
@@ -162,6 +164,8 @@ class Scraper():
         """
         try:
             return self.session.get(url, headers=HEADERS)
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except:
             retry_count += 1
             if retry_count <= 3:
