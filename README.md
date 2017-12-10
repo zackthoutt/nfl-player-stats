@@ -48,6 +48,7 @@ Note that if there are games missing in the season for a player (i.e. the player
 
 - *Player ID*: The assigned ID for the player.
 - *Year*: The year the game took place.
+- *Game ID*: The assigned ID for the game (format YYYYMMDD0\<hometeam\>).
 - *Date*: The date the game took place.
 - *Game Number*: The number of the game when all games in a season are numbered sequentially. 
 - *Age*: The age of the player when the game was played. This is in the format <years>-<days>. So 22-344 would be 22 years and 344 days old. 
@@ -111,10 +112,9 @@ Note that if there are games missing in the season for a player (i.e. the player
 
 1. Format data in an SQLite database
 2. Extract Team IDs to make relating players across teams and games easier
-3. Resolve Game IDs to make relating players in a given game easier
-4. Scrape college data (there are links on the website that shouldn't be too difficult to scrape)
-5. Figure out another method of scraping some additional data that isn't available on pro-football-reference.com, such as fumbles, passes defended, etc.
-6. Resolve blocking stats back to lineman based on the team they played for and the QB's sack stats for that game.
+3. Scrape college data (there are links on the website that shouldn't be too difficult to scrape)
+4. Figure out another method of scraping some additional data that isn't available on pro-football-reference.com, such as fumbles, passes defended, etc.
+5. Resolve blocking stats back to lineman based on the team they played for and the QB's sack stats for that game.
 
 ### Contributing
 

@@ -330,7 +330,7 @@ class Player():
 
         for game in games:
             stats = self.make_player_game_stats(self.player_id, year)
-
+            stats['game_id'] = game.find('td', {'data-stat': 'game_date'}).find('a', href=True)['href'].replace('/boxscores/', '').replace('.htm', '')
             stats['date'] = game.find('td', {'data-stat': 'game_date'}).contents[0].contents[0]
             stats['game_number'] = game.find('td', {'data-stat': 'game_num'}).contents[0]
             stats['age'] = game.find('td', {'data-stat': 'age'}).contents[0]
@@ -508,6 +508,7 @@ class Player():
             'player_id': player_id,
             'year': year,
             # General stats
+            'game_id': None,
             'date': None,
             'game_number': None,
             'age': None,
