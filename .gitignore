@@ -105,3 +105,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# temporary files
+.swp

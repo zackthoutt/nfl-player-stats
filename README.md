@@ -54,8 +54,10 @@ Note that if there are games missing in the season for a player (i.e. the player
 - *Team*: The three-letter code of the team the player played for.
 - *Game Location*: One of H, A, or N. H=Home, A=Away, and N=Neutral.
 - *Opponent*: The three-letter code of the team the game was played against.
+- *Game Won*: Result for the team the player played for. True if they won,
+  False if they lost..
 - *Player Team Score*: The score of the team the player played for.
-- *Opponent Score*: The score of the team the player played against. You can use this field and the last field to determine if the player's team won.
+- *Opponent Score*: The score of the team the player played against.
 
 **Passing Stats:**
 
