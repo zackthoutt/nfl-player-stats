@@ -3,6 +3,7 @@
 /stats_data
 /games_*.json
 /profiles_*.json
+*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -107,4 +108,4 @@ ENV/
 .mypy_cache/
 
 # temporary files
-.swp
+*.swp
