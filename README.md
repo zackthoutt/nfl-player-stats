@@ -110,14 +110,6 @@ Note that if there are games missing in the season for a player (i.e. the player
 - *Interception Touchdowns*: The number of touchdowns the player scored after interceptions.
 - *Safeties*: The number of safeties the player caused.
 
-### Futute Improvements
-
-1. Format data in an SQLite database
-2. Extract Team IDs to make relating players across teams and games easier
-3. Scrape college data (there are links on the website that shouldn't be too difficult to scrape)
-4. Figure out another method of scraping some additional data that isn't available on pro-football-reference.com, such as fumbles, passes defended, etc.
-5. Resolve blocking stats back to lineman based on the team they played for and the QB's sack stats for that game.
-
 ### Contributing
 
 If you would like to contribute, please feel free to put up a PR or reach out to me with ideas. I would love to collaborate with some fellow football fans on this project. 
