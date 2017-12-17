@@ -1,9 +1,9 @@
 # Repo
 /profile_data
 /stats_data
-/games_*.json
-/profiles_*.json
-*.db
+games_*.json
+profiles_*.json
+*.sqlite3
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
