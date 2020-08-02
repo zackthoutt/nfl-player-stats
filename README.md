@@ -5,7 +5,7 @@ Ever since I was in 8th grade I've dreamed of building an AI that could draft pl
 
 From what I've been able to determine researching, this is the most complete public source of NFL player stats available online. I scraped every NFL player in their database going back to the 1940s. That's over 25,000 players who have played over 1,000,000 football games. 
 
-### Shameless plug
+# Shameless plug
 When I wrote this scraper back in 2017, I had two people reach out to me who shared my passion for fantasy football and data science. We quickly decided to band together to create machine-learning-generated fantasy football predictions. Our website is https://gridironai.com. Over the last several years, we've worked to add dozens of data sources to our data stream that's collected weekly. Feel free to use this scraper for basic stats, but if you'd like a more complete dataset that's updated every week, check out our site.
 
 # Featured on Kaggle
